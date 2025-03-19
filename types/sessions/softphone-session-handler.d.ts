@@ -1,0 +1,57 @@
+import { DebouncedFunc } from 'lodash';
+import { Constants } from 'stanza';
+import BaseSessionHandler from './base-session-handler';
+import { IPendingSession, IAcceptSessionRequest, ISessionMuteRequest, IExtendedMediaSession, IUpdateOutgoingMedia, IStartSoftphoneSessionParams, IConversationParticipantFromEvent, ICallStateFromParticipant, IStoredConversationState, ISdkConversationUpdateEvent, IConversationHeldRequest, IActiveConversationDescription } from '../types/interfaces';
+import { CommunicationStates } from '../types/enums';
+import { ConversationUpdate } from '../conversations/conversation-update';
+import { GenesysCloudWebrtcSdk } from '..';
+import { SessionManager } from './session-manager';
+type SdkConversationEvents = 'added' | 'removed' | 'updated';
+export default class SoftphoneSessionHandler extends BaseSessionHandler {
+    sessionType: any;
+    activeSession?: IExtendedMediaSession;
+    conversations: {
+        [convesationId: string]: IStoredConversationState;
+    };
+    lastEmittedSdkConversationEvent: ISdkConversationUpdateEvent;
+    debouncedEmitCallError: DebouncedFunc<(update: ConversationUpdate, participant: IConversationParticipantFromEvent, callState: ICallStateFromParticipant) => void>;
+    constructor(sdk: GenesysCloudWebrtcSdk, sessionManager: SessionManager);
+    shouldHandleSessionByJid(jid: string): boolean;
+    handleConversationUpdate(update: ConversationUpdate, sessions: IExtendedMediaSession[]): void;
+    hasActiveSession(): boolean;
+    handlePropose(pendingSession: IPendingSession): Promise<void>;
+    getActiveConversations(): IActiveConversationDescription[];
+    handleSoftphoneConversationUpdate(update: ConversationUpdate, participant: IConversationParticipantFromEvent, callState: ICallStateFromParticipant, session?: IExtendedMediaSession): void;
+    diffConversationCallStates(call1: ICallStateFromParticipant, call2: ICallStateFromParticipant): boolean;
+    checkForCallErrors(update: ConversationUpdate, participant: IConversationParticipantFromEvent, callState: ICallStateFromParticipant): void;
+    private emitCallError;
+    emitConversationEvent(event: SdkConversationEvents, conversation: IStoredConversationState, session: IExtendedMediaSession): void;
+    determineActiveConversationId(session?: IExtendedMediaSession): string;
+    getUsersCallStateFromConversationEvent(update: ConversationUpdate, state?: CommunicationStates): ICallStateFromParticipant | undefined;
+    getUserParticipantFromConversationEvent(update: ConversationUpdate, state?: CommunicationStates): IConversationParticipantFromEvent | undefined;
+    getCallStateFromParticipant(participant: IConversationParticipantFromEvent): ICallStateFromParticipant | undefined;
+    private setCurrentSession;
+    handleSessionInit(session: IExtendedMediaSession): Promise<void>;
+    acceptSession(session: IExtendedMediaSession, params: IAcceptSessionRequest): Promise<any>;
+    proceedWithSession(pendingSession: IPendingSession): Promise<any>;
+    rejectPendingSession(pendingSession: IPendingSession): Promise<any>;
+    _rejectUcCall(conversationId: string, participantId: string): Promise<any>;
+    endSession(conversationId: string, session: IExtendedMediaSession, reason?: Constants.JingleReasonCondition): Promise<void>;
+    endSessionFallback(conversationId: string, session: IExtendedMediaSession, reason?: Constants.JingleReasonCondition): Promise<void>;
+    fetchUserParticipantFromConversationId(conversationId: string): Promise<IConversationParticipantFromEvent>;
+    private getUserParticipantFromConversationId;
+    setAudioMute(session: IExtendedMediaSession, params: ISessionMuteRequest): Promise<any>;
+    setConversationHeld(session: IExtendedMediaSession, params: IConversationHeldRequest): Promise<any>;
+    holdOtherSessions(currentSession: IExtendedMediaSession): void;
+    isConversationHeld(conversationId: string): boolean;
+    updateOutgoingMedia(session: IExtendedMediaSession, options: IUpdateOutgoingMedia): Promise<any>;
+    startSession(params: IStartSoftphoneSessionParams): Promise<{
+        id: string;
+        selfUri: string;
+    }>;
+    private patchPhoneCall;
+    private isPendingState;
+    private isConnectedState;
+    private isEndedState;
+}
+export {};

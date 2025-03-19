@@ -7,12 +7,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "cjs": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "es:bundle": "dist/es/index.bundle.js",
   "main": "src/index.ts",
-  "web": "dist/{version}/genesys-cloud-webrtc-sdk.bundle.js",
-  "typings": "dist/es/index.d.ts",
+  "types": "types/index.d.ts",
   "pre-push": [
     "test"
   ],
