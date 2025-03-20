@@ -9,9 +9,6 @@
   },
   "main": "src/index.ts",
   "types": "types/index.d.ts",
-  "pre-push": [
-    "test"
-  ],
   "watch": {
     "watchy": {
       "patterns": [
